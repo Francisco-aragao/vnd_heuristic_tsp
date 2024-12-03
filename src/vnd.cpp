@@ -9,7 +9,7 @@ namespace fs = std::filesystem;
 const int NUMBER_OF_ITERATIONS = 5;
 Utils utils;
 
-void processFile(const string& filename, bool useCenterCity) {
+void vnd(ifstream& inputFile, bool useCenterCity) {
 
     double totalPathCost = 0;
     double totalElapsedTime = 0;
@@ -20,15 +20,8 @@ void processFile(const string& filename, bool useCenterCity) {
     for (int iteration = 0; iteration < NUMBER_OF_ITERATIONS; ++iteration) {
 
         string distance_type;
-        int numCities;
-        vector<City> cities;
-        ifstream inputFile(filename);
-
-        if (!inputFile.is_open()) {
-            cerr << "Failed to open file: " << filename << endl;
-            return;
-        }
-
+        int numCities;        
+    
         start = std::clock();
 
         vector<string> res(2);
@@ -37,13 +30,15 @@ void processFile(const string& filename, bool useCenterCity) {
         numCities = stoi(res[0]);
         distance_type = res[1];
 
-        cities = utils.receiveCoordinatesParameters(inputFile, numCities, distance_type);
+        int tries = 10;
 
-        int initialCityId = 1;
-        if ( useCenterCity )
-            initialCityId = utils.findCenterCity(cities, numCities);
+        for (; tries >= 0; tries--) {
+            double pathCost = utils.constructive_heuristic(inputFile, numCities, distance_type, useCenterCity);
 
-        double pathCost = utils.findPath(initialCityId, cities, numCities);
+            // CHAMAR O 2-OPT AQUI COM O PATH ATUAL
+            // CHAMAR O 3-OPT AQUI COM O NOVO PATH
+        }
+        
 
         double elapsed = double(std::clock() - start) / CLOCKS_PER_SEC;
 
@@ -59,7 +54,6 @@ void processFile(const string& filename, bool useCenterCity) {
     vector<int> path = utils.getPath();
 
     cout << endl;
-    cout << "Results for " << filename << ":\n";
     cout << "Average Path Cost: " << avgPathCost << "\n";
     cout << "Average Elapsed Time: " << avgElapsedTime << " seconds\n";
     cout << "Path: ";
@@ -86,7 +80,17 @@ int main(int argc, char* argv[]) {
     // Process all .tsp files in the folder
     for (const auto& entry : fs::directory_iterator(folderPath)) {
         if (entry.path().extension() == ".tsp") { // just open .tsp files
-            processFile(entry.path().string(), useCenterCity);
+
+            string filename = entry.path().string();
+            ifstream inputFile(filename);
+
+            if (!inputFile.is_open()) {
+                cerr << "Failed to open file: " << filename << endl;
+                return;
+            }
+
+            cout << "Results for " << filename << ":\n";
+            vnd(inputFile, useCenterCity);
         }
     }
 

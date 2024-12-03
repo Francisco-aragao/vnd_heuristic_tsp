@@ -19,7 +19,7 @@ class Utils {
         int findCenterCity(vector<City> cities, int numCities);
         vector<City> receiveCoordinatesParameters(ifstream& inputFile, int numCities, string DISTANCE_TYPE);
         vector<string> findPathInfo(ifstream& inputFile);
-
+        double constructive_heuristic(ifstream& inputFile, int numCities, string distance_type, bool useCenterCity);
 };
 
 #endif

@@ -144,3 +144,14 @@ vector<string> Utils::findPathInfo(ifstream& inputFile) {
 
     return results;
 }
+
+double Utils::constructive_heuristic(ifstream& inputFile, int numCities, string distance_type, bool useCenterCity) {
+    vector<City> cities;
+    cities = this->receiveCoordinatesParameters(inputFile, numCities, distance_type);
+
+    int initialCityId = 1;
+    if ( useCenterCity )
+        initialCityId = this->findCenterCity(cities, numCities);
+
+    double pathCost = this->findPath(initialCityId, cities, numCities);
+}
