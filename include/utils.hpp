@@ -13,13 +13,19 @@ using namespace std;
 class Utils {
     private:
         vector<int> path;
+        vector<City> cities;
+        double pathCost;
     public:        
+        double getPathCost() {return pathCost;};
         vector<int> getPath() {return path;};
+        vector<City> getCities() {return cities;};
         double findPath(int initialCityId, vector<City> cities, int numCities);
         int findCenterCity(vector<City> cities, int numCities);
         vector<City> receiveCoordinatesParameters(ifstream& inputFile, int numCities, string DISTANCE_TYPE);
         vector<string> findPathInfo(ifstream& inputFile);
         double constructive_heuristic(ifstream& inputFile, int numCities, string distance_type, bool useCenterCity);
+        double two_opt(vector<City> cities);
+        double three_opt(vector<City> cities);
 };
 
 #endif

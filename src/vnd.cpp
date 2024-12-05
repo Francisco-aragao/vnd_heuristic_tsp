@@ -31,12 +31,41 @@ void vnd(ifstream& inputFile, bool useCenterCity) {
         distance_type = res[1];
 
         int tries = 10;
+        double pathCost = 0;
 
+        pathCost = utils.constructive_heuristic(inputFile, numCities, distance_type, useCenterCity);
+        
         for (; tries >= 0; tries--) {
-            double pathCost = utils.constructive_heuristic(inputFile, numCities, distance_type, useCenterCity);
 
-            // CHAMAR O 2-OPT AQUI COM O PATH ATUAL
-            // CHAMAR O 3-OPT AQUI COM O NOVO PATH
+            cout << "Initial Path Cost: " << pathCost << "\n";
+
+            double newPathCost = utils.two_opt(utils.getCities());
+
+            cout << "New Path Cost: " << newPathCost << "\n";
+
+
+
+            // ACHAR OUTRAS VIZINHANÇAS
+
+
+
+            if (newPathCost > pathCost) {
+                pathCost = newPathCost;
+                tries ++;
+                continue;
+            }
+
+            newPathCost = utils.three_opt(utils.getCities());
+
+            cout << "New Path Cost: " << newPathCost << "\n";
+
+            throw;
+
+            if (newPathCost < pathCost) {
+                pathCost = newPathCost;
+            }
+
+            tries = 10; // restart tries
         }
         
 
@@ -61,6 +90,8 @@ void vnd(ifstream& inputFile, bool useCenterCity) {
         cout << path[i] << " ";
     }
     cout << endl;
+
+    return;
 }
 
 int main(int argc, char* argv[]) {
@@ -86,7 +117,7 @@ int main(int argc, char* argv[]) {
 
             if (!inputFile.is_open()) {
                 cerr << "Failed to open file: " << filename << endl;
-                return;
+                return 1;
             }
 
             cout << "Results for " << filename << ":\n";
