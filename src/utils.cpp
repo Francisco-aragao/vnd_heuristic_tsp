@@ -170,7 +170,7 @@ double Utils::two_opt(vector<City> cities) {
     vector<int> newPath;
 
     int tries = 0;
-    while (newPathCost > this->pathCost) {
+    /* while (newPathCost > this->pathCost) {
         tries++;
 
         int randomPos1 = rand() % (int)initialPath.size();
@@ -193,20 +193,19 @@ double Utils::two_opt(vector<City> cities) {
 
         newPathCost += cities[newPath[newPath.size() - 1]].returnDistanceTo(newPath[0]);
 
-    }
+    } */
     cout << "Tries: " << tries << endl;
 
 
     //
-    /* tries = 0; 
+    tries = 0; 
     newPathCost = this->pathCost + 1;
     newPath = initialPath;
 
-    bool improved = false;
 
-    for (int i = 0; i < (int)initialPath.size() && !improved ; i++) {
+    for (int i = 0; i < (int)initialPath.size()  ; i++) {
 
-        for (int j = 0; j < (int) initialPath.size() && !improved; j++) {
+        for (int j = 0; j < (int) initialPath.size() ; j++) {
 
             if (i == j)
                 continue;
@@ -226,29 +225,30 @@ double Utils::two_opt(vector<City> cities) {
             newPathCost += cities[newPath[newPath.size() - 1]].returnDistanceTo(newPath[0]);
 
             if (newPathCost < this->pathCost) {
-                improved = true;
+                this->path = newPath;
+                this->pathCost = newPathCost;
+
+                return newPathCost;
             }
         }   
     }
-    cout << "Tries: " << tries << endl; */
+    cout << "Tries: " << tries << endl;
     //
 
-    this->path = newPath;
-    this->pathCost = newPathCost;
+    return this->pathCost;
 
-    return newPathCost;
 
 }
 
 double Utils::three_opt(vector<City> cities) {
     
-        vector<int> initialPath = this->path;
+    vector<int> initialPath = this->path;
 
     double newPathCost = this->pathCost + 1;
     vector<int> newPath;
 
     int tries = 0;
-    while (newPathCost > this->pathCost) {
+    /* while (newPathCost > this->pathCost) {
         tries++;
 
         int randomPos1 = rand() % (int)initialPath.size();
@@ -274,18 +274,16 @@ double Utils::three_opt(vector<City> cities) {
 
         newPathCost += cities[newPath[newPath.size() - 1]].returnDistanceTo(newPath[0]);
 
-    }
+    } */
 
-    /* newPathCost = this->pathCost + 1;
+    newPathCost = this->pathCost + 1;
     newPath = initialPath;
 
-    bool improved = false;
+    for (int i = 0; i < (int)initialPath.size()  ; i++) {
 
-    for (int i = 0; i < (int)initialPath.size() && !improved ; i++) {
-
-        for (int j = 0; j < (int) initialPath.size() && !improved; j++) {
+        for (int j = 0; j < (int) initialPath.size() ; j++) {
             
-            for (int k = 0; k < (int) initialPath.size() && !improved; k++) {
+            for (int k = 0; k < (int) initialPath.size() ; k++) {
 
                 if (i == j || j == k || i == k)
                     continue;
@@ -295,7 +293,7 @@ double Utils::three_opt(vector<City> cities) {
 
                 int temp = newPath[i];
                 newPath[i] = newPath[j];
-                newPath[i] = newPath[k];
+                newPath[j] = newPath[k];
                 newPath[k] = temp;
 
                 newPathCost = 0;
@@ -306,15 +304,72 @@ double Utils::three_opt(vector<City> cities) {
                 newPathCost += cities[newPath[newPath.size() - 1]].returnDistanceTo(newPath[0]);
 
                 if (newPathCost < this->pathCost) {
-                    improved = true;
+                    this->path = newPath;
+                    this->pathCost = newPathCost;
+
+                    return newPathCost;
                 }
             }
         }   
-    } */
+    }
     cout << "Tries: " << tries << endl;
 
-    this->path = newPath;
-    this->pathCost = newPathCost;
 
-    return newPathCost;
+    return this->pathCost;
+}
+
+double Utils::double_bridge(vector<City> cities) {
+    // Make sure i < j and k < l
+
+    vector<int> initialPath = this->path;
+
+    double newPathCost = this->pathCost + 1;
+    vector<int> newPath = initialPath;
+
+    bool improved = false;
+    int tries = 0;
+
+    for (int i = 0; i < (int)initialPath.size()  ; i++) {
+
+        for (int j = i; j < (int) initialPath.size() ; j++) {
+            
+            for (int k = j; k < (int) initialPath.size() ; k++) {
+            
+                for (int l = k; l < (int) initialPath.size() ; l++) {
+                    
+                    if (i == j || j == k || i == k || i == l || j == l || k == l)
+                        continue;
+
+                    newPath = initialPath;
+
+                    tries++;
+                    // Store the original segments
+                    int temp = newPath[i];
+                    int temp2 = newPath[l];
+                    newPath[i] = newPath[k];
+                    newPath[l] = newPath[j];
+                    newPath[k] = temp;
+                    newPath[j] = temp2;
+
+                    newPathCost = 0;
+                    for (int i = 0; i < (int)newPath.size() - 1; i++) {
+                        newPathCost += cities[newPath[i]].returnDistanceTo(newPath[i + 1]);
+                    }
+
+                    newPathCost += cities[newPath[newPath.size() - 1]].returnDistanceTo(newPath[0]);
+
+                    if (newPathCost < this->pathCost) {
+                        this->path = newPath;
+                        this->pathCost = newPathCost;
+
+                        return newPathCost;
+                    }
+                }
+            }
+        }
+    }
+
+    cout << "Tries: " << tries << endl;
+
+    return this->pathCost;
 }

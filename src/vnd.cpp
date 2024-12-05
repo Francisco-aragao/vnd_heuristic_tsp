@@ -17,7 +17,7 @@ void vnd(ifstream& inputFile, bool useCenterCity) {
     std::clock_t start; // variable to control time management
 
     // collect results for 5 iterations and calculate the average
-    for (int iteration = 0; iteration < NUMBER_OF_ITERATIONS; ++iteration) {
+    //for (int iteration = 0; iteration < NUMBER_OF_ITERATIONS; ++iteration) {
 
         string distance_type;
         int numCities;        
@@ -30,67 +30,66 @@ void vnd(ifstream& inputFile, bool useCenterCity) {
         numCities = stoi(res[0]);
         distance_type = res[1];
 
-        int tries = 10;
-        double pathCost = 0;
+        int improved = true;
+        double pathCost;
 
         pathCost = utils.constructive_heuristic(inputFile, numCities, distance_type, useCenterCity);
         
-        for (; tries >= 0; tries--) {
+        while(improved == true) {
+
+            improved = false;
 
             cout << "Initial Path Cost: " << pathCost << "\n";
 
             double newPathCost = utils.two_opt(utils.getCities());
 
-            cout << "New Path Cost: " << newPathCost << "\n";
+            cout << "2 New Path Cost: " << newPathCost << "\n";
 
-
-
-            // ACHAR OUTRAS VIZINHANÇAS
-
-
-
-            if (newPathCost > pathCost) {
+            if (newPathCost < pathCost) {
                 pathCost = newPathCost;
-                tries ++;
+                improved = true;
                 continue;
             }
 
             newPathCost = utils.three_opt(utils.getCities());
 
-            cout << "New Path Cost: " << newPathCost << "\n";
-
-            throw;
+            cout << "3 New Path Cost: " << newPathCost << "\n";
 
             if (newPathCost < pathCost) {
                 pathCost = newPathCost;
+                improved = true;
+                continue;
+            }
+            newPathCost = utils.double_bridge(utils.getCities());
+
+            cout << "Bridge New Path Cost: " << newPathCost << "\n";
+
+            if (newPathCost < pathCost) {
+                pathCost = newPathCost;
+                improved = true;
+                continue;
             }
 
-            tries = 10; // restart tries
         }
         
 
         double elapsed = double(std::clock() - start) / CLOCKS_PER_SEC;
 
-        totalPathCost += pathCost;
-        totalElapsedTime += elapsed;
-    }
+    //}
 
     // calculate the average path cost and elapsed time for the instance
-
-    double avgPathCost = totalPathCost / NUMBER_OF_ITERATIONS;
-    double avgElapsedTime = totalElapsedTime / NUMBER_OF_ITERATIONS;
 
     vector<int> path = utils.getPath();
 
     cout << endl;
-    cout << "Average Path Cost: " << avgPathCost << "\n";
-    cout << "Average Elapsed Time: " << avgElapsedTime << " seconds\n";
+    cout << "Path Cost: " << pathCost << "\n";
+    cout << "Elapsed Time: " << elapsed << " seconds\n";
     cout << "Path: ";
     for (int i = 0; i < (int) path.size(); i++) {
         cout << path[i] << " ";
     }
     cout << endl;
-
+    throw;
     return;
 }
 

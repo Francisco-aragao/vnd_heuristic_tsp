@@ -26,6 +26,7 @@ class Utils {
         double constructive_heuristic(ifstream& inputFile, int numCities, string distance_type, bool useCenterCity);
         double two_opt(vector<City> cities);
         double three_opt(vector<City> cities);
+        double double_bridge(vector<City> cities);
 };
 
 #endif
