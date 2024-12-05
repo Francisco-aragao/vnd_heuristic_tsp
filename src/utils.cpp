@@ -2,6 +2,10 @@
 
 double Utils::findPath(int initialCityId, vector<City> cities, int numCities) {
     vector<int> path;
+    this->path = path;
+
+    cout << initialCityId << endl;
+    cout << numCities << endl;
 
     path.push_back(initialCityId);
 
@@ -146,8 +150,21 @@ vector<string> Utils::findPathInfo(ifstream& inputFile) {
 }
 
 double Utils::constructive_heuristic(ifstream& inputFile, int numCities, string distance_type, bool useCenterCity) {
+
     vector<City> cities;
     cities = this->receiveCoordinatesParameters(inputFile, numCities, distance_type);
+
+
+
+
+
+    // O PROBLEMA TA NO CITIES, PRECISO SALVAR ORGANIZAÇÃO ORIGINAL DAS CIDADES
+
+
+
+
+
+    cout << "Cities size: " << cities.size() << endl;
 
     this->cities = cities;
 
@@ -155,7 +172,11 @@ double Utils::constructive_heuristic(ifstream& inputFile, int numCities, string 
     if ( useCenterCity )
         initialCityId = this->findCenterCity(cities, numCities);
 
+    cout << "Initial City: " << initialCityId << endl;
+
     double pathCost = this->findPath(initialCityId, cities, numCities);
+
+    cout << "Path Cost: " << pathCost << endl;
 
     this->pathCost = pathCost;
 
