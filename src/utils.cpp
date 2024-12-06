@@ -4,9 +4,6 @@ double Utils::findPath(int initialCityId, vector<City> cities, int numCities) {
     vector<int> path;
     this->path = path;
 
-    //cout << initialCityId << endl;
-    //cout << numCities << endl;
-
     path.push_back(initialCityId);
 
     int currentCityId = initialCityId;
@@ -141,7 +138,6 @@ vector<string> Utils::findPathInfo(ifstream& inputFile) {
         }
     }
 
-
     vector<string> results;
     results.push_back(numCities);
     results.push_back(distance_type);
@@ -149,12 +145,11 @@ vector<string> Utils::findPathInfo(ifstream& inputFile) {
     return results;
 }
 
+// constructive heuristic to find the initial path using the nearest neighbor algorithm (greedy)
 double Utils::constructive_heuristic(ifstream& inputFile, int numCities, string distance_type, bool useCenterCity) {
 
     vector<City> cities;
     cities = this->receiveCoordinatesParameters(inputFile, numCities, distance_type);
-
-    //cout << "Cities size: " << cities.size() << endl;
 
     this->cities = cities;
 
@@ -162,17 +157,16 @@ double Utils::constructive_heuristic(ifstream& inputFile, int numCities, string 
     if ( useCenterCity )
         initialCityId = this->findCenterCity(cities, numCities);
 
-    //cout << "Initial City: " << initialCityId << endl;
 
     double pathCost = this->findPath(initialCityId, cities, numCities);
 
-    //cout << "Path Cost: " << pathCost << endl;
 
     this->pathCost = pathCost;
 
     return pathCost;
 }
 
+// 2-opt heuristic to improve the path. Runs over all possible pairs of edges and tries to swap them to improve the path cost
 double Utils::two_opt(vector<City> cities) {
 
     vector<int> initialPath = this->path;
@@ -181,38 +175,8 @@ double Utils::two_opt(vector<City> cities) {
     vector<int> newPath;
 
     int tries = 0;
-    /* while (newPathCost > this->pathCost) {
-        tries++;
-
-        int randomPos1 = rand() % (int)initialPath.size();
-        int randomPos2 = rand() % (int)initialPath.size();
-
-        while (randomPos1 == randomPos2) {
-            randomPos2 = rand() % (int)initialPath.size();
-        }
-
-        newPath = initialPath;
-
-        int temp = newPath[randomPos1];
-        newPath[randomPos1] = newPath[randomPos2];
-        newPath[randomPos2] = temp;
-
-        newPathCost = 0;
-        for (int i = 0; i < (int)newPath.size() - 1; i++) {
-            newPathCost += cities[newPath[i]].returnDistanceTo(newPath[i + 1]);
-        }
-
-        newPathCost += cities[newPath[newPath.size() - 1]].returnDistanceTo(newPath[0]);
-
-    } */
-    //cout << "Tries: " << tries << endl;
-
-
-    //
-    tries = 0; 
     newPathCost = this->pathCost + 1;
     newPath = initialPath;
-
 
     for (int i = 0; i < (int)initialPath.size()  ; i++) {
 
@@ -233,7 +197,7 @@ double Utils::two_opt(vector<City> cities) {
                 newPathCost += cities[newPath[i]].returnDistanceTo(newPath[i + 1]);
             }
 
-            newPathCost += cities[newPath[newPath.size() - 1]].returnDistanceTo(newPath[0]);
+            newPathCost += cities[newPath[newPath.size() - 1]].returnDistanceTo(newPath[0]); // add the distance from the last city to the first one
 
             if (newPathCost < this->pathCost) {
                 this->path = newPath;
@@ -244,13 +208,13 @@ double Utils::two_opt(vector<City> cities) {
         }   
     }
     //cout << "Tries: " << tries << endl;
-    //
 
     return this->pathCost;
 
 
 }
 
+// 3-opt heuristic to improve the path. Runs over all possible triplets of edges and tries to swap them to improve the path cost
 double Utils::three_opt(vector<City> cities) {
     
     vector<int> initialPath = this->path;
@@ -259,33 +223,6 @@ double Utils::three_opt(vector<City> cities) {
     vector<int> newPath;
 
     int tries = 0;
-    /* while (newPathCost > this->pathCost) {
-        tries++;
-
-        int randomPos1 = rand() % (int)initialPath.size();
-        int randomPos2 = rand() % (int)initialPath.size();
-        int randomPos3 = rand() % (int)initialPath.size();
-
-        while (randomPos1 == randomPos2 || randomPos1 == randomPos3 || randomPos2 == randomPos3) {
-            randomPos2 = rand() % (int)initialPath.size();
-            randomPos3 = rand() % (int)initialPath.size();
-        }
-
-        newPath = initialPath;
-
-        int temp = newPath[randomPos1];
-        newPath[randomPos1] = newPath[randomPos2];
-        newPath[randomPos2] = newPath[randomPos3];
-        newPath[randomPos3] = temp;
-
-        newPathCost = 0;
-        for (int i = 0; i < (int)newPath.size() - 1; i++) {
-            newPathCost += cities[newPath[i]].returnDistanceTo(newPath[i + 1]);
-        }
-
-        newPathCost += cities[newPath[newPath.size() - 1]].returnDistanceTo(newPath[0]);
-
-    } */
 
     newPathCost = this->pathCost + 1;
     newPath = initialPath;
@@ -312,7 +249,7 @@ double Utils::three_opt(vector<City> cities) {
                     newPathCost += cities[newPath[i]].returnDistanceTo(newPath[i + 1]);
                 }
 
-                newPathCost += cities[newPath[newPath.size() - 1]].returnDistanceTo(newPath[0]);
+                newPathCost += cities[newPath[newPath.size() - 1]].returnDistanceTo(newPath[0]); // add the distance from the last city to the first one
 
                 if (newPathCost < this->pathCost) {
                     this->path = newPath;
@@ -329,8 +266,8 @@ double Utils::three_opt(vector<City> cities) {
     return this->pathCost;
 }
 
+// double bridge heuristic to improve the path. Runs over all possible 4-tuple of edges and tries to swap them to improve the path cost. The double bridge replace the edges using a cross strategy 
 double Utils::double_bridge(vector<City> cities) {
-    // Make sure i < j and k < l
 
     vector<int> initialPath = this->path;
 
@@ -354,7 +291,6 @@ double Utils::double_bridge(vector<City> cities) {
                     newPath = initialPath;
 
                     tries++;
-                    // Store the original segments
                     int temp = newPath[i];
                     int temp2 = newPath[l];
                     newPath[i] = newPath[k];
@@ -367,7 +303,7 @@ double Utils::double_bridge(vector<City> cities) {
                         newPathCost += cities[newPath[i]].returnDistanceTo(newPath[i + 1]);
                     }
 
-                    newPathCost += cities[newPath[newPath.size() - 1]].returnDistanceTo(newPath[0]);
+                    newPathCost += cities[newPath[newPath.size() - 1]].returnDistanceTo(newPath[0]); // add the distance from the last city to the first one
 
                     if (newPathCost < this->pathCost) {
                         this->path = newPath;

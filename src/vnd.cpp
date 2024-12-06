@@ -6,7 +6,7 @@
 using namespace std;
 namespace fs = std::filesystem;
 
-const int NUMBER_OF_ITERATIONS = 1;
+const int NUMBER_OF_ITERATIONS = 5;
 Utils utils;
 
 void vnd(ifstream& inputFile, bool useCenterCity) {
@@ -14,25 +14,28 @@ void vnd(ifstream& inputFile, bool useCenterCity) {
     double totalPathCost = 0;
     double totalElapsedTime = 0;
     
-    std::clock_t start; // variable to control time management
-
     vector<string> res(2);
     res = utils.findPathInfo(inputFile);
 
     int numCities = stoi(res[0]);
     string distance_type = res[1];
 
+    std::clock_t start = std::clock(); // variable to control time management
 
     double pathCost = utils.constructive_heuristic(inputFile, numCities, distance_type, useCenterCity);
     
+    double firstSolutionTime = double(std::clock() - start) / CLOCKS_PER_SEC;
+
+    cout << "First Solution Time: " << firstSolutionTime << " seconds\n";
+
     vector<City> originalCities = utils.getCities();
     vector<int> originalPath = utils.getPath();
     double originalPathCost = pathCost;
 
-    // collect results for 5 iterations and calculate the average
-    for (int iteration = 0; iteration < NUMBER_OF_ITERATIONS; ++iteration) {
-    
-        start = std::clock();
+    // collect results for N iterations and calculate the average
+    for (int iteration = 0; iteration < NUMBER_OF_ITERATIONS; iteration++) {
+
+        start = std::clock();    
 
         int improved = true;
 
@@ -51,9 +54,7 @@ void vnd(ifstream& inputFile, bool useCenterCity) {
 
             double newPathCost = utils.two_opt(utils.getCities());
 
-            //cout << "2 New Path Cost: " << newPathCost << "\n";
-
-            if (newPathCost < pathCost) {
+            if (newPathCost < pathCost) { // restart the loop if the path cost is improved
                 pathCost = newPathCost;
                 improved = true;
                 continue;
@@ -61,16 +62,14 @@ void vnd(ifstream& inputFile, bool useCenterCity) {
 
             newPathCost = utils.three_opt(utils.getCities());
 
-            //cout << "3 New Path Cost: " << newPathCost << "\n";
 
             if (newPathCost < pathCost) {
                 pathCost = newPathCost;
                 improved = true;
                 continue;
             }
-            newPathCost = utils.double_bridge(utils.getCities());
 
-            //cout << "Bridge New Path Cost: " << newPathCost << "\n";
+            newPathCost = utils.double_bridge(utils.getCities());
 
             if (newPathCost < pathCost) {
                 pathCost = newPathCost;
@@ -80,12 +79,12 @@ void vnd(ifstream& inputFile, bool useCenterCity) {
 
         }
         
-        double elapsed = double(std::clock() - start) / CLOCKS_PER_SEC;
+        double VNDTime = double(std::clock() - start) / CLOCKS_PER_SEC;
 
         totalPathCost += pathCost;
-        totalElapsedTime += elapsed;
+        totalElapsedTime += VNDTime;
 
-        cout << "Elapsed Time: " << elapsed << " seconds\n";
+        cout << "VND Time: " << VNDTime << " seconds\n";
     }
 
     // calculate the average path cost and elapsed time for the instance
@@ -97,10 +96,10 @@ void vnd(ifstream& inputFile, bool useCenterCity) {
 
     cout << "Average Path Cost: " << avgPathCost << "\n";
     cout << "Average Elapsed Time: " << avgElapsedTime << " seconds\n";
-    /* cout << "Path: ";
+    cout << "Path: ";
     for (int i = 0; i < (int) path.size(); i++) {
         cout << path[i] << " ";
-    } */
+    }
     cout << endl;
     cout << endl;
 
