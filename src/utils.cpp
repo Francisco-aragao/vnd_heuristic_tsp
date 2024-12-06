@@ -4,8 +4,8 @@ double Utils::findPath(int initialCityId, vector<City> cities, int numCities) {
     vector<int> path;
     this->path = path;
 
-    cout << initialCityId << endl;
-    cout << numCities << endl;
+    //cout << initialCityId << endl;
+    //cout << numCities << endl;
 
     path.push_back(initialCityId);
 
@@ -154,17 +154,7 @@ double Utils::constructive_heuristic(ifstream& inputFile, int numCities, string 
     vector<City> cities;
     cities = this->receiveCoordinatesParameters(inputFile, numCities, distance_type);
 
-
-
-
-
-    // O PROBLEMA TA NO CITIES, PRECISO SALVAR ORGANIZAÇÃO ORIGINAL DAS CIDADES
-
-
-
-
-
-    cout << "Cities size: " << cities.size() << endl;
+    //cout << "Cities size: " << cities.size() << endl;
 
     this->cities = cities;
 
@@ -172,11 +162,11 @@ double Utils::constructive_heuristic(ifstream& inputFile, int numCities, string 
     if ( useCenterCity )
         initialCityId = this->findCenterCity(cities, numCities);
 
-    cout << "Initial City: " << initialCityId << endl;
+    //cout << "Initial City: " << initialCityId << endl;
 
     double pathCost = this->findPath(initialCityId, cities, numCities);
 
-    cout << "Path Cost: " << pathCost << endl;
+    //cout << "Path Cost: " << pathCost << endl;
 
     this->pathCost = pathCost;
 
@@ -215,7 +205,7 @@ double Utils::two_opt(vector<City> cities) {
         newPathCost += cities[newPath[newPath.size() - 1]].returnDistanceTo(newPath[0]);
 
     } */
-    cout << "Tries: " << tries << endl;
+    //cout << "Tries: " << tries << endl;
 
 
     //
@@ -253,7 +243,7 @@ double Utils::two_opt(vector<City> cities) {
             }
         }   
     }
-    cout << "Tries: " << tries << endl;
+    //cout << "Tries: " << tries << endl;
     //
 
     return this->pathCost;
@@ -333,7 +323,7 @@ double Utils::three_opt(vector<City> cities) {
             }
         }   
     }
-    cout << "Tries: " << tries << endl;
+    //cout << "Tries: " << tries << endl;
 
 
     return this->pathCost;
@@ -390,7 +380,7 @@ double Utils::double_bridge(vector<City> cities) {
         }
     }
 
-    cout << "Tries: " << tries << endl;
+    //cout << "Tries: " << tries << endl;
 
     return this->pathCost;
 }

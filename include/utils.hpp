@@ -19,6 +19,9 @@ class Utils {
         double getPathCost() {return pathCost;};
         vector<int> getPath() {return path;};
         vector<City> getCities() {return cities;};
+        void setPathCost(double pathCost) {this->pathCost = pathCost;};
+        void setCities(vector<City> cities) {this->cities = cities;};
+        void setPath(vector<int> path) {this->path = path;};
         double findPath(int initialCityId, vector<City> cities, int numCities);
         int findCenterCity(vector<City> cities, int numCities);
         vector<City> receiveCoordinatesParameters(ifstream& inputFile, int numCities, string DISTANCE_TYPE);
